@@ -8,6 +8,8 @@ import cohere
 from llmsherpa.readers import LayoutPDFReader
 
 from fastapi import FastAPI, File, UploadFile, Request
+from fastapi.middleware.cors import CORSMiddleware
+
 
 from dotenv import find_dotenv
 from dotenv import load_dotenv
@@ -26,6 +28,19 @@ cohere_key = os.getenv("CO_API_KEY")
 co = cohere.Client(cohere_key)
 
 app = FastAPI()
+
+# Specify your frontend origin here
+origins = [
+    "http://localhost:3000/*",  # The origin where your frontend is hosted
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows specified origins or ["*"] for all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 @app.get("/")
 def read_root():
@@ -68,18 +83,23 @@ async def read_pdf(file: Annotated[bytes, File()]):
 
     return {"contents": docs }
 
-@app.post("/rank_sentences/")
-async def search(query: str, requirements: List[str], resume_documents: List[str]):
+
+@app.post("/generate_paragraphs/")
+async def generate_paragraphs(requirements: List[str], resume_documents: List[str]):
     documents = []
 
     for doc in resume_documents:
         documents.append({"snippet" : doc})
 
-    query = f""" You are a professional cover letter writer. 
-    Here are the job requirements for the position you are applying for: {requirements}
+    results = []
+    for req in requirements:
+        query = f""" 
+        Here are the job requirements for the position you are applying for: {requirements}
 
-    Take a deep breath, and use all relevant information to write a professional cover letter.
-    """
-    result = co.chat(query, documents=documents)
+        Take a deep breath, and use all relevant information to write a professional cover letter.
+        """
+        results.append(co.chat(query, documents=documents))
 
-    return {'output' : result.text}
+    print(results)
+
+    return {'output' : results}
