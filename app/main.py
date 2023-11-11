@@ -44,8 +44,9 @@ async def extract_url(url: str):
             text=div.get_text(),
             length='long',
             format='bullets',
-            model='summarize-xlarge',
-            additional_command='Extract job requirements for writing a cover letter.',
+            model='command',
+            additional_command='ONLY EXTRACT REQUIRED QUALIFICATIONS.',
+            extractiveness='high',
             temperature=0.0,
         ) 
 
@@ -67,16 +68,18 @@ async def read_pdf(file: Annotated[bytes, File()]):
 
     return {"contents": docs }
 
-@app.post("/search_sentences/")
-async def search(query: str, sentences: List[str]):
-    doc_emb = co.embed(sentences, input_type="search_document", model="embed-english-v3.0").embeddings
-    doc_emb = np.asarray(doc_emb)
+@app.post("/rank_sentences/")
+async def search(query: str, requirements: List[str], resume_documents: List[str]):
+    documents = []
 
-    query = """The candidate should have a collaborative approach to stakeholder engagement and possess an understanding of A/B testing."""
-    query_emb = co.embed([query], input_type="search_query", model="embed-english-v3.0").embeddings
-    query_emb = np.asarray(query_emb)
+    for doc in resume_documents:
+        documents.append({"snippet" : doc})
 
-    scores = np.dot(query_emb, doc_emb.T)[0]
-    # max_idx = np.argsort(-scores)
+    query = f""" You are a professional cover letter writer. 
+    Here are the job requirements for the position you are applying for: {requirements}
 
-    return {'scores' : scores}
+    Take a deep breath, and use all relevant information to write a professional cover letter.
+    """
+    result = co.chat(query, documents=documents)
+
+    return {'output' : result.text}

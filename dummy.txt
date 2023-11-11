@@ -1,0 +1,75 @@
+https://www.linkedin.com/jobs/view/3760775090/?alternateChannel=search&refId=vL58uUbmR1HtLYiahGmb%2BA%3D%3D&trackingId=AUMLCSmMIBns7dBvOIf0mw%3D%3D
+
+ [
+    "Join us for an opportunity to work with the best game development teams in the world\n",
+    "We are looking for an AI Engineer to join the tools development and automation team supporting Bioware, Motive, Cliffhanger, Maxis, Full Circle and Mobile\n",
+    "The goal is to improve automation infrastructure and increasing efficiencies in the Game Development and QA processes\n",
+    "7+ year experience in a hands-on development role\n",
+    "5+ years of professional development experience with C/C++\n",
+    "Experience shipping at least one AAA title with a significant AI contribution\n",
+    "Familiarity with advanced game engines like Unreal\n",
+    "Bachelor's degree in Computer, Software Engineering, Computer Science Degree or related concentration, equivalent and/or combination of education and work experience"
+  ]
+
+[
+    "VAUGHAN LOVE\n | 403-973-2236 | vaughan.e.love@gmail.com | linkedin.com/in/vaughan-love\n | --- | --- | ---\n | E |  | q\n | github.com/vaughanlove | Calgary Alberta Canada (willing to relocate) | vaughanlove.github.io\n | q | e | s\n",
+    "SUMMARY\nNew graduate with a bachelor's degree in Applied Math and Computer Engineering from Queen's University.\nPassionate about working on complex problems in data science, machine learning, and software engineering.\nCurrently at malaconnect, contributing to open-source, and experimenting with the use of large language models in DevOps and hospitality.",
+    "WORK EXPERIENCE\nSoftware Engineer\nmalaconnect\nPresent malaconnect.de\nFull-stack development.\nwww.malaconnect.de.\nUsing K8s, Docker, Nginx, React, Next, and Flask.\nQuantitative Analyst\nFeta Markets\n05/2022 - 10/2022 Remote\nMitigated platform risk by back-testing different options writing strategies.\nUsed Pandas, Numpy, and Python.\nJunior Data Analyst\nGlobal Predictions Inc\n06/2021 - 01/2022 San Francisco California United States\nPerformed data analysis of macroeconomic relationships and provided insight for the creation of the second iteration of Global Prediction's Knowledge Graph.\nUsed Python extensively for data analysis and helped algorithmically create over 10k relationships for the knowledge graph.\nUndergraduate Researcher\nUniversity of Calgary\n05/2021 - 08/2021 Calgary Alberta Canada\nResearched the impact vision has on the recovery of proprioception within stroke patients using the Kinarm exoskeleton.\nUsed MATLAB and Python.",
+    "Software Engineer",
+    "malaconnect\nPresent malaconnect.de\nFull-stack development.\nwww.malaconnect.de.\nUsing K8s, Docker, Nginx, React, Next, and Flask.\nQuantitative Analyst\nFeta Markets\n05/2022 - 10/2022 Remote\nMitigated platform risk by back-testing different options writing strategies.\nUsed Pandas, Numpy, and Python.\nJunior Data Analyst\nGlobal Predictions Inc\n06/2021 - 01/2022 San Francisco California United States\nPerformed data analysis of macroeconomic relationships and provided insight for the creation of the second iteration of Global Prediction's Knowledge Graph.\nUsed Python extensively for data analysis and helped algorithmically create over 10k relationships for the knowledge graph.\nUndergraduate Researcher\nUniversity of Calgary\n05/2021 - 08/2021 Calgary Alberta Canada\nResearched the impact vision has on the recovery of proprioception within stroke patients using the Kinarm exoskeleton.\nUsed MATLAB and Python.",
+    "Present malaconnect.de\nFull-stack development.\nwww.malaconnect.de.\nUsing K8s, Docker, Nginx, React, Next, and Flask.",
+    "Quantitative Analyst\nFeta Markets\n05/2022 - 10/2022 Remote\nMitigated platform risk by back-testing different options writing strategies.\nUsed Pandas, Numpy, and Python.",
+    "Feta Markets\n05/2022 - 10/2022 Remote\nMitigated platform risk by back-testing different options writing strategies.\nUsed Pandas, Numpy, and Python.",
+    "Junior Data Analyst\nGlobal Predictions Inc\n06/2021 - 01/2022 San Francisco California United States\nPerformed data analysis of macroeconomic relationships and provided insight for the creation of the second iteration of Global Prediction's Knowledge Graph.\nUsed Python extensively for data analysis and helped algorithmically create over 10k relationships for the knowledge graph.",
+    "Global Predictions Inc\n06/2021 - 01/2022 San Francisco California United States\nPerformed data analysis of macroeconomic relationships and provided insight for the creation of the second iteration of Global Prediction's Knowledge Graph.\nUsed Python extensively for data analysis and helped algorithmically create over 10k relationships for the knowledge graph.",
+    "Undergraduate Researcher\nUniversity of Calgary\n05/2021 - 08/2021 Calgary Alberta Canada\nResearched the impact vision has on the recovery of proprioception within stroke patients using the Kinarm exoskeleton.\nUsed MATLAB and Python.",
+    "University of Calgary\n05/2021 - 08/2021 Calgary Alberta Canada\nResearched the impact vision has on the recovery of proprioception within stroke patients using the Kinarm exoskeleton.\nUsed MATLAB and Python.",
+    "TECHNICAL ACTIVITIES\nPersonal Projects\n2019 - Present vaughanlove.github.io\nq Been programming ideas that interest me since 2019.\nAn overview of the best ones are available on my GitHub or website.\nSquare x Google Hackathon\n09/2023 - 10/2023 Built a LLM-powered table side waiter.\nDesigned to run on a Raspberry Pi.\nRepo @ github.com/vaughanlove/EzServe.\nUsed LangChain, GCP, and ChromaDB.\nBreakpoint Global Fellow\n11/2021 Lisbon, Portugal Developed subscription infrastructure for the Solana developer ecosystem and was one of thirty candidates sponsored to travel to Solana Breakpoint in Lisbon. Used Anchor, Rust, and Vue. Tech Lead 08/2020 - 03/2021 Kingston, ON\nDeveloped NotifAI, an AI-powered application for notiﬁcation management.\nPresented at the Canadian Undergraduate Conference on Artiﬁcial Intelligence.",
+    "Personal Projects\n2019 - Present vaughanlove.github.io\nq Been programming ideas that interest me since 2019.\nAn overview of the best ones are available on my GitHub or website.",
+    "Square x Google Hackathon\n09/2023 - 10/2023 Built a LLM-powered table side waiter.\nDesigned to run on a Raspberry Pi.\nRepo @ github.com/vaughanlove/EzServe.\nUsed LangChain, GCP, and ChromaDB.",
+    "Breakpoint Global Fellow\n11/2021 Lisbon, Portugal Developed subscription infrastructure for the Solana developer ecosystem and was one of thirty candidates sponsored to travel to Solana Breakpoint in Lisbon. Used Anchor, Rust, and Vue. Tech Lead 08/2020 - 03/2021 Kingston, ON\nDeveloped NotifAI, an AI-powered application for notiﬁcation management.\nPresented at the Canadian Undergraduate Conference on Artiﬁcial Intelligence.",
+    "SKILLS\nPython Unix Rust TypeScript React TF/TFX Flask PyTorch Kubernetes Docker Unix Next",
+    "EDUCATION/COURSES\nBASc in Applied Mathematics Engineering\nQueen's University\n09/2019 - 04/2023 Kingston Ontario Canada\ne e\nMachine Learning Engineering for Production (MLOps) Specialization\nCoursera\n10/2023 Online",
+    "BASc in Applied Mathematics Engineering",
+    "Queen's University\n09/2019 - 04/2023 Kingston Ontario Canada\ne e\nMachine Learning Engineering for Production (MLOps) Specialization\nCoursera\n10/2023 Online",
+    "Machine Learning Engineering for Production (MLOps) Specialization\nCoursera\n10/2023 Online",
+    "Coursera\n10/2023 Online"
+  ]
+
+
+{
+  "requirements":  [
+    "Join us for an opportunity to work with the best game development teams in the world\n",
+    "We are looking for an AI Engineer to join the tools development and automation team supporting Bioware, Motive, Cliffhanger, Maxis, Full Circle and Mobile\n",
+    "The goal is to improve automation infrastructure and increasing efficiencies in the Game Development and QA processes\n",
+    "7+ year experience in a hands-on development role\n",
+    "5+ years of professional development experience with C/C++\n",
+    "Experience shipping at least one AAA title with a significant AI contribution\n",
+    "Familiarity with advanced game engines like Unreal\n",
+    "Bachelor's degree in Computer, Software Engineering, Computer Science Degree or related concentration, equivalent and/or combination of education and work experience"
+  ],
+  "resume_documents": [
+    "VAUGHAN LOVE\n | 403-973-2236 | vaughan.e.love@gmail.com | linkedin.com/in/vaughan-love\n | --- | --- | ---\n | E |  | q\n | github.com/vaughanlove | Calgary Alberta Canada (willing to relocate) | vaughanlove.github.io\n | q | e | s\n",
+    "SUMMARY\nNew graduate with a bachelor's degree in Applied Math and Computer Engineering from Queen's University.\nPassionate about working on complex problems in data science, machine learning, and software engineering.\nCurrently at malaconnect, contributing to open-source, and experimenting with the use of large language models in DevOps and hospitality.",
+    "WORK EXPERIENCE\nSoftware Engineer\nmalaconnect\nPresent malaconnect.de\nFull-stack development.\nwww.malaconnect.de.\nUsing K8s, Docker, Nginx, React, Next, and Flask.\nQuantitative Analyst\nFeta Markets\n05/2022 - 10/2022 Remote\nMitigated platform risk by back-testing different options writing strategies.\nUsed Pandas, Numpy, and Python.\nJunior Data Analyst\nGlobal Predictions Inc\n06/2021 - 01/2022 San Francisco California United States\nPerformed data analysis of macroeconomic relationships and provided insight for the creation of the second iteration of Global Prediction's Knowledge Graph.\nUsed Python extensively for data analysis and helped algorithmically create over 10k relationships for the knowledge graph.\nUndergraduate Researcher\nUniversity of Calgary\n05/2021 - 08/2021 Calgary Alberta Canada\nResearched the impact vision has on the recovery of proprioception within stroke patients using the Kinarm exoskeleton.\nUsed MATLAB and Python.",
+    "Software Engineer",
+    "malaconnect\nPresent malaconnect.de\nFull-stack development.\nwww.malaconnect.de.\nUsing K8s, Docker, Nginx, React, Next, and Flask.\nQuantitative Analyst\nFeta Markets\n05/2022 - 10/2022 Remote\nMitigated platform risk by back-testing different options writing strategies.\nUsed Pandas, Numpy, and Python.\nJunior Data Analyst\nGlobal Predictions Inc\n06/2021 - 01/2022 San Francisco California United States\nPerformed data analysis of macroeconomic relationships and provided insight for the creation of the second iteration of Global Prediction's Knowledge Graph.\nUsed Python extensively for data analysis and helped algorithmically create over 10k relationships for the knowledge graph.\nUndergraduate Researcher\nUniversity of Calgary\n05/2021 - 08/2021 Calgary Alberta Canada\nResearched the impact vision has on the recovery of proprioception within stroke patients using the Kinarm exoskeleton.\nUsed MATLAB and Python.",
+    "Present malaconnect.de\nFull-stack development.\nwww.malaconnect.de.\nUsing K8s, Docker, Nginx, React, Next, and Flask.",
+    "Quantitative Analyst\nFeta Markets\n05/2022 - 10/2022 Remote\nMitigated platform risk by back-testing different options writing strategies.\nUsed Pandas, Numpy, and Python.",
+    "Feta Markets\n05/2022 - 10/2022 Remote\nMitigated platform risk by back-testing different options writing strategies.\nUsed Pandas, Numpy, and Python.",
+    "Junior Data Analyst\nGlobal Predictions Inc\n06/2021 - 01/2022 San Francisco California United States\nPerformed data analysis of macroeconomic relationships and provided insight for the creation of the second iteration of Global Prediction's Knowledge Graph.\nUsed Python extensively for data analysis and helped algorithmically create over 10k relationships for the knowledge graph.",
+    "Global Predictions Inc\n06/2021 - 01/2022 San Francisco California United States\nPerformed data analysis of macroeconomic relationships and provided insight for the creation of the second iteration of Global Prediction's Knowledge Graph.\nUsed Python extensively for data analysis and helped algorithmically create over 10k relationships for the knowledge graph.",
+    "Undergraduate Researcher\nUniversity of Calgary\n05/2021 - 08/2021 Calgary Alberta Canada\nResearched the impact vision has on the recovery of proprioception within stroke patients using the Kinarm exoskeleton.\nUsed MATLAB and Python.",
+    "University of Calgary\n05/2021 - 08/2021 Calgary Alberta Canada\nResearched the impact vision has on the recovery of proprioception within stroke patients using the Kinarm exoskeleton.\nUsed MATLAB and Python.",
+    "TECHNICAL ACTIVITIES\nPersonal Projects\n2019 - Present vaughanlove.github.io\nq Been programming ideas that interest me since 2019.\nAn overview of the best ones are available on my GitHub or website.\nSquare x Google Hackathon\n09/2023 - 10/2023 Built a LLM-powered table side waiter.\nDesigned to run on a Raspberry Pi.\nRepo @ github.com/vaughanlove/EzServe.\nUsed LangChain, GCP, and ChromaDB.\nBreakpoint Global Fellow\n11/2021 Lisbon, Portugal Developed subscription infrastructure for the Solana developer ecosystem and was one of thirty candidates sponsored to travel to Solana Breakpoint in Lisbon. Used Anchor, Rust, and Vue. Tech Lead 08/2020 - 03/2021 Kingston, ON\nDeveloped NotifAI, an AI-powered application for notiﬁcation management.\nPresented at the Canadian Undergraduate Conference on Artiﬁcial Intelligence.",
+    "Personal Projects\n2019 - Present vaughanlove.github.io\nq Been programming ideas that interest me since 2019.\nAn overview of the best ones are available on my GitHub or website.",
+    "Square x Google Hackathon\n09/2023 - 10/2023 Built a LLM-powered table side waiter.\nDesigned to run on a Raspberry Pi.\nRepo @ github.com/vaughanlove/EzServe.\nUsed LangChain, GCP, and ChromaDB.",
+    "Breakpoint Global Fellow\n11/2021 Lisbon, Portugal Developed subscription infrastructure for the Solana developer ecosystem and was one of thirty candidates sponsored to travel to Solana Breakpoint in Lisbon. Used Anchor, Rust, and Vue. Tech Lead 08/2020 - 03/2021 Kingston, ON\nDeveloped NotifAI, an AI-powered application for notiﬁcation management.\nPresented at the Canadian Undergraduate Conference on Artiﬁcial Intelligence.",
+    "SKILLS\nPython Unix Rust TypeScript React TF/TFX Flask PyTorch Kubernetes Docker Unix Next",
+    "EDUCATION/COURSES\nBASc in Applied Mathematics Engineering\nQueen's University\n09/2019 - 04/2023 Kingston Ontario Canada\ne e\nMachine Learning Engineering for Production (MLOps) Specialization\nCoursera\n10/2023 Online",
+    "BASc in Applied Mathematics Engineering",
+    "Queen's University\n09/2019 - 04/2023 Kingston Ontario Canada\ne e\nMachine Learning Engineering for Production (MLOps) Specialization\nCoursera\n10/2023 Online",
+    "Machine Learning Engineering for Production (MLOps) Specialization\nCoursera\n10/2023 Online",
+    "Coursera\n10/2023 Online"
+  ]
+}
