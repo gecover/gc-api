@@ -70,10 +70,22 @@ async def extract_url(payload: URLPayload):
             extractiveness='high',
             temperature=0.0,
         ) 
-
         # first element is always ""
         clean_response = response.summary.split('- ')[1:]
-        return {"contents" : clean_response}
+
+        meta = co.generate(
+            prompt=f"""Extract the job title and company name from this text:
+            {div.get_text()}
+
+            Formatted as 
+            Job title:
+            Company name: 
+            """,
+            temperature=0.0,
+        )
+
+
+        return {"contents" : clean_response, 'meta': meta}
     else:
         return {"error" : "div not found"}
 
@@ -113,40 +125,31 @@ def generate_paragraphs(requirements: List[str], resume_documents: List[str]):
         responses = [future.result().text for future in futures]
 
     para_one_prompt = f"""
-    Condense the following information into the first paragraph of a cover letter: 
-    {(' ').join(responses[:len(responses)//2])}
-    Write in first person. Don't include information that has no evidence.
+    You are a professional writer. Not a chat bot.
+    Summarize the following information into two distinct paragraphs: 
+
+    {(' ').join(responses)}
+
+    Write in first person. Take a breath, and write like you are speaking to someone.
+
+    Remember to format it as two distinct paragraphs.
     """
 
-    para_two_prompt = f"""
-    Condense the following information into the second paragraph of a cover letter: 
-    {(' ').join(responses[len(responses)//2:])}
-    Write in first person. Don't include information that has no evidence.
-    """
+    # para_two_prompt = f"""
+    # Condense the following information into the second paragraph of a cover letter: 
+    # {(' ').join(responses[len(responses)//2:])}
+    # Write in first person. Don't include information that has no evidence.
+    # """
 
-    with ThreadPoolExecutor(max_workers=2) as executor:
-        futures = [executor.submit(co.generate, para_one_prompt), executor.submit(co.generate, para_two_prompt)]
-        responses = [future.result() for future in futures]
+    # with ThreadPoolExecutor(max_workers=2) as executor:
+    #     futures = [executor.submit(co.generate, para_one_prompt, temperature=0.0), executor.submit(co.generate, para_two_prompt, temperature=0.0)]
+    #     responses = [future.result() for future in futures]
 
-    
-    # first_para = co.summarize( 
-    #     text=(' ').join(responses[:len(responses)//2]),
-    #     length='long',
-    #     format='paragraph',
-    #     model='command',
-    #     extractiveness='high',
-    #     additional_command='In first person for the first paragraph of a cover letter.',
-    #     temperature=0.0,
-    # ) 
-    
-    # second_para = co.summarize( 
-    #     text=(' ').join(responses[len(responses)//2:]),
-    #     length='long',
-    #     format='paragraph',
-    #     model='command-nightly',
-    #     extractiveness='high',
-    #     additional_command='In first person for the second paragraph of a cover letter.',
-    #     temperature=0.0,
-    # ) 
 
-    return {'first_para' : responses[0].data[0], 'second_para':responses[1].data[0]}
+    # k value flattens the probability distribution 
+    # frequency penalty decreases likelihood of repititon of specific tokens. (further decreasing ai content detection.)
+    # frequency penalty also decreases the likelihood of formatting stuff like \n appearing. 
+    # tempurature of 1.2 seems to be a sweet spot. I think anything [1.0, 1.5] is good for natural text generation.
+    result = co.generate(para_one_prompt, k=25, temperature=1.2, frequency_penalty=0.1, num_generations=2) 
+
+    return {'para_A' : result.data[0], 'para_B' : result.data[1]}
