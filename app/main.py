@@ -85,7 +85,7 @@ async def extract_url(payload: URLPayload):
         )
 
 
-        return {"contents" : clean_response, 'meta': meta}
+        return {"contents" : clean_response, 'meta': meta.data[0]}
     else:
         return {"error" : "div not found"}
 
