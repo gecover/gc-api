@@ -10,6 +10,7 @@ from llmsherpa.readers import LayoutPDFReader
 from fastapi import FastAPI, File, UploadFile, Request
 from fastapi.middleware.cors import CORSMiddleware
 
+from concurrent.futures import ThreadPoolExecutor
 
 from dotenv import find_dotenv
 from dotenv import load_dotenv
@@ -76,13 +77,12 @@ async def extract_url(url: str):
 @app.post("/read_pdf/")
 async def read_pdf(file: Annotated[bytes, File()]):
     # the path_or_url is fake, ignored when contents is set.
-    content = pdf_reader.read_pdf(path_or_url="https://someexapmple.com/myfile.pdf", contents=file)
+    content = pdf_reader.read_pdf(path_or_url="", contents=file)
     docs = []
     for section in content.sections():
         docs.append(section.to_text(include_children=True, recurse=True))
 
     return {"contents": docs }
-
 
 @app.post("/generate_paragraphs/")
 def generate_paragraphs(requirements: List[str], resume_documents: List[str]):
@@ -91,8 +91,8 @@ def generate_paragraphs(requirements: List[str], resume_documents: List[str]):
     for doc in resume_documents:
         documents.append({"snippet" : doc})
 
-    results = []
-    
+    queries = []
+
     for i, req in enumerate(requirements):
         query = f""" 
         Explain in a couple sentences in first person about how I satisfy the following job requirement: 
@@ -101,26 +101,51 @@ def generate_paragraphs(requirements: List[str], resume_documents: List[str]):
 
         My resume is in the documents supplied.
         """
-        print(i)
-        results.append(co.chat(query, documents=documents).text)
+        queries.append(query)
+
+    with ThreadPoolExecutor(max_workers=len(requirements)) as executor:
+        futures = [executor.submit(co.chat, query, documents=documents) for query in queries]
+        responses = [future.result().text for future in futures]
+
+    para_one_prompt = f"""
+    Condense the following information into the first paragraph of a cover letter: 
+    {(' ').join(responses[:len(responses)//2])}
+    Write in first person. Don't include information that has no evidence.
+    """
+
+    para_two_prompt = f"""
+    Condense the following information into the second paragraph of a cover letter: 
+    {(' ').join(responses[len(responses)//2:])}
+    Write in first person. Don't include information that has no evidence.
+    """
+
+    first_para = co.generate(
+        prompt=para_one_prompt
+    )
+
+    second_para = co.generate(
+        prompt=para_two_prompt
+    )
+
     
-    first_para = co.summarize( 
-        text=(' ').join(results[:len(results)//2]),
-        length='long',
-        format='paragraph',
-        model='command',
-        extractiveness='high',
-        additional_command='Take the information supplied and simplify for the first paragraph of a cover letter.',
-        temperature=0.0,
-    ) 
-    second_para = co.summarize( 
-        text=(' ').join(results[len(results)//2:]),
-        length='long',
-        format='paragraph',
-        model='command-nightly',
-        extractiveness='high',
-        additional_command='Take the information supplied and simplify for the second paragraph of a cover letter.',
-        temperature=0.0,
-    ) 
+    # first_para = co.summarize( 
+    #     text=(' ').join(responses[:len(responses)//2]),
+    #     length='long',
+    #     format='paragraph',
+    #     model='command',
+    #     extractiveness='high',
+    #     additional_command='In first person for the first paragraph of a cover letter.',
+    #     temperature=0.0,
+    # ) 
+    
+    # second_para = co.summarize( 
+    #     text=(' ').join(responses[len(responses)//2:]),
+    #     length='long',
+    #     format='paragraph',
+    #     model='command-nightly',
+    #     extractiveness='high',
+    #     additional_command='In first person for the second paragraph of a cover letter.',
+    #     temperature=0.0,
+    # ) 
 
     return {'first_para' : first_para, 'second_para':second_para}
