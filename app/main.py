@@ -17,6 +17,11 @@ from dotenv import load_dotenv
 import bs4 as bs
 import urllib.request
 
+from pydantic import BaseModel
+
+class URLPayload(BaseModel):
+    url: str
+    
 # llm sherpa for reading pdfs
 llmsherpa_api_url = "https://readers.llmsherpa.com/api/document/developer/parseDocument?renderFormat=all"
 pdf_reader = LayoutPDFReader(llmsherpa_api_url)
@@ -47,8 +52,8 @@ def read_root():
     return {"Hello": "World"}
 
 @app.post("/extract_url/")
-async def extract_url(url: str):
-    source = urllib.request.urlopen(url)
+async def extract_url(payload: URLPayload):
+    source = urllib.request.urlopen(payload.url)
     soup = bs.BeautifulSoup(source,'lxml')
     div = soup.find("div", class_ = "show-more-less-html__markup show-more-less-html__markup--clamp-after-5 relative overflow-hidden" )
     if div:
