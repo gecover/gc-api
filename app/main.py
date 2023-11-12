@@ -124,13 +124,9 @@ def generate_paragraphs(requirements: List[str], resume_documents: List[str]):
     Write in first person. Don't include information that has no evidence.
     """
 
-    first_para = co.generate(
-        prompt=para_one_prompt
-    )
-
-    second_para = co.generate(
-        prompt=para_two_prompt
-    )
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        futures = [executor.submit(co.generate, para_one_prompt), executor.submit(co.generate, para_two_prompt)]
+        responses = [future.result() for future in futures]
 
     
     # first_para = co.summarize( 
@@ -153,4 +149,4 @@ def generate_paragraphs(requirements: List[str], resume_documents: List[str]):
     #     temperature=0.0,
     # ) 
 
-    return {'first_para' : first_para, 'second_para':second_para}
+    return {'first_para' : responses[0].data[0], 'second_para':responses[1].data[0]}
