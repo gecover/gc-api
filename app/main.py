@@ -85,21 +85,42 @@ async def read_pdf(file: Annotated[bytes, File()]):
 
 
 @app.post("/generate_paragraphs/")
-async def generate_paragraphs(requirements: List[str], resume_documents: List[str]):
+def generate_paragraphs(requirements: List[str], resume_documents: List[str]):
     documents = []
 
     for doc in resume_documents:
         documents.append({"snippet" : doc})
 
     results = []
-    for req in requirements:
+    
+    for i, req in enumerate(requirements):
         query = f""" 
-        Here are the job requirements for the position you are applying for: {requirements}
+        Explain in a couple sentences in first person about how I satisfy the following job requirement: 
 
-        Take a deep breath, and use all relevant information to write a professional cover letter.
+        {req}
+
+        My resume is in the documents supplied.
         """
-        results.append(co.chat(query, documents=documents))
+        print(i)
+        results.append(co.chat(query, documents=documents).text)
+    
+    first_para = co.summarize( 
+        text=(' ').join(results[:len(results)//2]),
+        length='long',
+        format='paragraph',
+        model='command',
+        extractiveness='high',
+        additional_command='Take the information supplied and simplify for the first paragraph of a cover letter.',
+        temperature=0.0,
+    ) 
+    second_para = co.summarize( 
+        text=(' ').join(results[len(results)//2:]),
+        length='long',
+        format='paragraph',
+        model='command-nightly',
+        extractiveness='high',
+        additional_command='Take the information supplied and simplify for the second paragraph of a cover letter.',
+        temperature=0.0,
+    ) 
 
-    print(results)
-
-    return {'output' : results}
+    return {'first_para' : first_para, 'second_para':second_para}
