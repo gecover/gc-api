@@ -2,6 +2,7 @@ from typing import Union, Annotated, List
 import os
 
 import numpy as np
+import json
 
 import cohere
 
@@ -73,19 +74,20 @@ async def extract_url(payload: URLPayload):
         # first element is always ""
         clean_response = response.summary.split('- ')[1:]
 
-        meta = co.generate(
-            prompt=f"""Extract the job title and company name from this text:
-            {div.get_text()}
+        # meta = co.generate(
+        #     prompt=f"""Extract the job title and company name from this text.
+        #     {div.get_text()}
 
-            Formatted as 
-            Job title:
-            Company name: 
-            """,
-            temperature=0.0,
-        )
+        #     Formatted as a JSON object with fields job_title and company_name.
+        #     """,
+        #     temperature=0.0,
+        # )
 
+        print(soup)
 
-        return {"contents" : clean_response, 'meta': meta.data[0]}
+        company = soup.find("a", class_="topcard__org-name-link topcard__flavor--black-link").get_text()
+        job_title = soup.find("h1", class_="top-card-layout__title font-sans text-lg papabear:text-xl font-bold leading-open text-color-text mb-0 topcard__title").get_text()
+        return {"contents" : clean_response, 'company': company, 'job_title': job_title}
     else:
         return {"error" : "div not found"}
 
@@ -125,14 +127,14 @@ def generate_paragraphs(requirements: List[str], resume_documents: List[str]):
         responses = [future.result().text for future in futures]
 
     para_one_prompt = f"""
-    You are a professional writer. Not a chat bot.
-    Summarize the following information into two distinct paragraphs: 
+    Write professionally. Do not act as a chat bot.
+    Summarize the following information into two paragraphs: 
 
     {(' ').join(responses)}
 
     Write in first person. Take a breath, and write like you are speaking to someone.
 
-    Remember to format it as two distinct paragraphs.
+    Remember to format it as two paragraphs. Remember, do not prompt the user as a chat bot.
     """
 
     # para_two_prompt = f"""
