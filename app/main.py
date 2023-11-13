@@ -9,10 +9,14 @@ import cohere
 
 from llmsherpa.readers import LayoutPDFReader
 
-from fastapi import FastAPI, File, UploadFile, Request
+from fastapi import FastAPI, File, UploadFile, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordBearer
 
 from concurrent.futures import ThreadPoolExecutor
+
+from supabase import create_client, Client
+
 
 from dotenv import find_dotenv
 from dotenv import load_dotenv
@@ -32,10 +36,18 @@ pdf_reader = LayoutPDFReader(llmsherpa_api_url)
 
 env_file = find_dotenv(".env.dev")
 load_dotenv(env_file)
+
+url: str = os.environ.get("SUPABASE_URL")
+key: str = os.environ.get("SUPABASE_KEY")
+supabase: Client = create_client(url, key)
+
 cohere_key = os.getenv("CO_API_KEY")
 co = cohere.Client(cohere_key)
 
 app = FastAPI()
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
 
 # Specify your frontend origin here
 origins = [
@@ -55,7 +67,12 @@ def read_root():
     return {"Hello": "World"}
 
 @app.post("/extract_url/")
-async def extract_url(payload: URLPayload):
+async def extract_url(payload: URLPayload, token: Annotated[str, Depends(oauth2_scheme)]):
+    # get user data from JWT
+    data = supabase.auth.get_user(token)
+    # assert that the user is authenticated.
+    assert data.user.aud == 'authenticated', "402: not authenticated."
+    
     source = urllib.request.urlopen(payload.url)
     soup = bs.BeautifulSoup(source,'lxml')
     div = soup.find("div", class_ = "show-more-less-html__markup show-more-less-html__markup--clamp-after-5 relative overflow-hidden" )
@@ -86,7 +103,14 @@ async def extract_url(payload: URLPayload):
 
 
 @app.post("/read_pdf/")
-async def read_pdf(file: Annotated[bytes, File()]):
+async def read_pdf(file: Annotated[bytes, File()], token: Annotated[str, Depends(oauth2_scheme)]):
+    
+    # get user data from JWT
+    data = supabase.auth.get_user(token)
+
+    # assert that the user is authenticated.
+    assert data.user.aud == 'authenticated', "402: not authenticated."
+
     # the path_or_url is fake, ignored when contents is set.
     content = pdf_reader.read_pdf(path_or_url="https://someexapmple.com/myfile.pdf", contents=file)
     docs = []
@@ -96,7 +120,13 @@ async def read_pdf(file: Annotated[bytes, File()]):
     return {"contents": docs }
 
 @app.post("/generate_paragraphs/")
-def generate_paragraphs(requirements: List[str], resume_documents: List[str]):
+def generate_paragraphs(requirements: List[str], resume_documents: List[str], token: Annotated[str, Depends(oauth2_scheme)]):
+    # get user data from JWT
+    data = supabase.auth.get_user(token)
+
+    # assert that the user is authenticated.
+    assert data.user.aud == 'authenticated', "402: not authenticated."
+
     documents = []
 
     for doc in resume_documents:
