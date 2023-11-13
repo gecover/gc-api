@@ -120,7 +120,7 @@ async def read_pdf(file: Annotated[bytes, File()], token: Annotated[str, Depends
     return {"contents": docs }
 
 @app.post("/generate_paragraphs/")
-def generate_paragraphs(requirements: List[str], resume_documents: List[str], token: Annotated[str, Depends(oauth2_scheme)]):
+def generate_paragraphs(requirements: List[str], resume_documents: List[str], token: Annotated[str, Depends(oauth2_scheme)]):#, token: Annotated[str, Depends(oauth2_scheme)]
     # get user data from JWT
     data = supabase.auth.get_user(token)
 
@@ -140,7 +140,7 @@ def generate_paragraphs(requirements: List[str], resume_documents: List[str], to
 
         {req}
 
-        My resume is in the documents supplied.
+        My resume is in the documents supplied. Remember, make it brief, a maximum of 4 sentences.
         """
         queries.append(query)
 
@@ -148,16 +148,19 @@ def generate_paragraphs(requirements: List[str], resume_documents: List[str], to
         futures = [executor.submit(co.chat, query, documents=documents) for query in queries]
         responses = [future.result().text for future in futures]
 
-    para_one_prompt = f"""
-    Write professionally. Do not act as a chat bot.
-    Summarize the following information into two paragraphs: 
+    input_credentials = ("\n - ").join(responses)
 
-    {(' ').join(responses)}
+    para_one_prompt = f"""
+    Write two professional paragraphs. Do not act as a chat bot.
+    Below is a list of my credentials: 
+
+    {input_credentials}
 
     Write in first person. Take a breath, and write like you are speaking to someone.
 
-    Remember to format it as two paragraphs. Remember to not talk to the user as a chat bot.
+    Remember to not talk to the user as a chat bot. 
     """
+
 
     # para_two_prompt = f"""
     # Condense the following information into the second paragraph of a cover letter: 
