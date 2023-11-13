@@ -3,6 +3,7 @@ import os
 
 import numpy as np
 import json
+import re
 
 import cohere
 
@@ -74,20 +75,11 @@ async def extract_url(payload: URLPayload):
         # first element is always ""
         clean_response = response.summary.split('- ')[1:]
 
-        # meta = co.generate(
-        #     prompt=f"""Extract the job title and company name from this text.
-        #     {div.get_text()}
-
-        #     Formatted as a JSON object with fields job_title and company_name.
-        #     """,
-        #     temperature=0.0,
-        # )
-
-        print(soup)
-
         company = soup.find("a", class_="topcard__org-name-link topcard__flavor--black-link").get_text()
+        pattern = r"(?<=\n)(.*?)(?=\n)"
+        clean_company = re.findall(pattern, company)[0]
         job_title = soup.find("h1", class_="top-card-layout__title font-sans text-lg papabear:text-xl font-bold leading-open text-color-text mb-0 topcard__title").get_text()
-        return {"contents" : clean_response, 'company': company, 'job_title': job_title}
+        return {"contents" : clean_response, 'company': clean_company, 'job_title': job_title}
     else:
         return {"error" : "div not found"}
 
@@ -134,7 +126,7 @@ def generate_paragraphs(requirements: List[str], resume_documents: List[str]):
 
     Write in first person. Take a breath, and write like you are speaking to someone.
 
-    Remember to format it as two paragraphs. Remember, do not prompt the user as a chat bot.
+    Remember to format it as two paragraphs. Remember to not talk to the user as a chat bot.
     """
 
     # para_two_prompt = f"""
