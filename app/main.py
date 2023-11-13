@@ -95,6 +95,7 @@ async def extract_url(payload: URLPayload, token: Annotated[str, Depends(oauth2_
         company = soup.find("a", class_="topcard__org-name-link topcard__flavor--black-link").get_text()
         pattern = r"(?<=\n)(.*?)(?=\n)"
         clean_company = re.findall(pattern, company)[0]
+        print("hello")
         job_title = soup.find("h1", class_="top-card-layout__title font-sans text-lg papabear:text-xl font-bold leading-open text-color-text mb-0 topcard__title").get_text()
         return {"contents" : clean_response, 'company': clean_company, 'job_title': job_title}
     else:
@@ -112,11 +113,16 @@ async def read_pdf(file: Annotated[bytes, File()], token: Annotated[str, Depends
     assert data.user.aud == 'authenticated', "402: not authenticated."
 
     # the path_or_url is fake, ignored when contents is set.
-    content = pdf_reader.read_pdf(path_or_url="https://someexapmple.com/myfile.pdf", contents=file)
+    try:
+        content = pdf_reader.read_pdf(path_or_url="https://someexapmple.com/myfile.pdf", contents=file)
+    except:
+        # very mid error handling
+        return {"contents" : []}
+
     docs = []
     for section in content.sections():
         docs.append(section.to_text(include_children=True, recurse=True))
-
+    
     return {"contents": docs }
 
 @app.post("/generate_paragraphs/")
