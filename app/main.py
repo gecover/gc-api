@@ -161,11 +161,14 @@ def generate_paragraphs(requirements: List[str], resume_documents: List[str], to
     query = """Critical job requirement for applying."""
 
     rerank_hits = co.rerank(query=query, documents=responses, top_n=min(len(documents), 5), model='rerank-multilingual-v2.0').results
+    
+    rerank_results = [x.document['text'] for x in rerank_hits]
 
     # reverse it, because LLMs have a recency bias
-    rerank_hits.reverse()
+    rerank_results.reverse()
+
     # rerank_hits.reverse()
-    input_credentials = ("\n - ").join(rerank_hits)
+    input_credentials = ("\n - ").join(rerank_results)
 
     para_one_prompt = f"""
     Summarize the credentials below into paragraph form:
