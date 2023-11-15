@@ -125,12 +125,12 @@ async def read_pdf(file: Annotated[bytes, File()], token: Annotated[str, Depends
     return {"contents": docs }
 
 @app.post("/generate_paragraphs/")
-def generate_paragraphs(requirements: List[str], resume_documents: List[str], token: Annotated[str, Depends(oauth2_scheme)]):#, token: Annotated[str, Depends(oauth2_scheme)]
+def generate_paragraphs(requirements: List[str], resume_documents: List[str]):#, token: Annotated[str, Depends(oauth2_scheme)]
     # get user data from JWT
-    data = supabase.auth.get_user(token)
+    # data = supabase.auth.get_user(token)
 
     # assert that the user is authenticated.
-    assert data.user.aud == 'authenticated', "402: not authenticated."
+    # assert data.user.aud == 'authenticated', "402: not authenticated."
 
     documents = []
 
@@ -161,9 +161,9 @@ def generate_paragraphs(requirements: List[str], resume_documents: List[str], to
     input_credentials = ("\n - ").join(responses)
 
     para_one_prompt = f"""
-    Write two professional paragraphs summarizing the points below.
+    Summarize the credentials below into paragraph form:
 
-    {input_credentials}
+    - {input_credentials}
 
     Write in first person. Take a breath, and write like you are speaking to someone.
 
@@ -188,6 +188,7 @@ def generate_paragraphs(requirements: List[str], resume_documents: List[str], to
     # frequency penalty decreases likelihood of repititon of specific tokens. (further decreasing ai content detection.)
     # frequency penalty also decreases the likelihood of formatting stuff like \n appearing. 
     # tempurature of 1.2 seems to be a sweet spot. I think anything [1.0, 1.5] is good for natural text generation.
-    result = co.generate(para_one_prompt, k=25, temperature=1.2, frequency_penalty=0.1, num_generations=2) 
+    
+    result = co.generate(para_one_prompt, k=25, temperature=0.96, frequency_penalty=0.1, num_generations=1) 
 
-    return {'para_A' : result.data[0], 'para_B' : result.data[1]}
+    return {'para_A' : result.data[0], 'para_B' : 'result.data[1]'}
