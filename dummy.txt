@@ -4,7 +4,6 @@ https://www.linkedin.com/jobs/view/3760775090/?alternateChannel=search&refId=vL5
     "Join us for an opportunity to work with the best game development teams in the world\n",
     "We are looking for an AI Engineer to join the tools development and automation team supporting Bioware, Motive, Cliffhanger, Maxis, Full Circle and Mobile\n",
     "The goal is to improve automation infrastructure and increasing efficiencies in the Game Development and QA processes\n",
-    "7+ year experience in a hands-on development role\n",
     "5+ years of professional development experience with C/C++\n",
     "Experience shipping at least one AAA title with a significant AI contribution\n",
     "Familiarity with advanced game engines like Unreal\n",
