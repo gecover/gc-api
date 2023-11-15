@@ -177,7 +177,8 @@ def generate_paragraphs(requirements: List[str], resume_documents: List[str], to
 
     Write in first person. Take a breath, and write like you are speaking to someone.
 
-    Remember, DO NOT prompt the user as a chat bot. Output a maximum of two paragraphs. 
+    Remember, DO NOT prompt the user as a chat bot. Don't repeat skills once you have said them. 
+    Make it a maximum of two paragraphs, and remember to make it sound legit. 
     """
 
     # k value flattens the probability distribution 
