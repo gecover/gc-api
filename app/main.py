@@ -154,10 +154,22 @@ def generate_paragraphs(requirements: List[str], resume_documents: List[str], to
         futures = [executor.submit(co.chat, query, documents=documents) for query in queries]
         responses = [future.result().text for future in futures]
 
-    # we can make the assumption that credentials listed first on the job posting
-    # are the most important. And since LLMs have a recency bias (tokens closer to 
-    # the end are considered more often) we reverse the list.
-    responses.reverse()
+    #Encode your documents with input type 'search_document'
+    doc_emb = co.embed(responses, input_type="search_document", model="embed-english-v3.0").embeddings
+    doc_emb = np.asarray(doc_emb)
+
+    query = """Critical job requirement for applying."""
+    query_emb = co.embed([query], input_type="search_query", model="embed-english-v3.0").embeddings
+    query_emb = np.asarray(query_emb)
+    query_emb.shape
+
+    #Compute the dot product between query embedding and document embedding
+    scores = np.dot(query_emb, doc_emb.T)[0]
+
+    rerank_hits = co.rerank(query=query, documents=docs, top_n=min(len(documents), 5), model='rerank-multilingual-v2.0')
+
+    # reverse it, because LLMs have a recency bias
+    rerank_hits.reverse()
     input_credentials = ("\n - ").join(responses)
 
     para_one_prompt = f"""
@@ -170,7 +182,7 @@ def generate_paragraphs(requirements: List[str], resume_documents: List[str], to
     Remember, do not prompt the user as a chat bot. 
     """
 
-    print(para_one_prompt)
+    # print(para_one_prompt)
 
 
     # para_two_prompt = f"""
