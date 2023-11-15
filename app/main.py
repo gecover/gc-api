@@ -171,13 +171,13 @@ def generate_paragraphs(requirements: List[str], resume_documents: List[str], to
     input_credentials = ("\n - ").join(rerank_results)
 
     para_one_prompt = f"""
-    Summarize the credentials below into paragraph form:
+    Summarize the credentials below:
 
     - {input_credentials}
 
     Write in first person. Take a breath, and write like you are speaking to someone.
 
-    Remember, do not prompt the user as a chat bot. 
+    Remember, DO NOT prompt the user as a chat bot. Output a maximum of two paragraphs. 
     """
 
     # k value flattens the probability distribution 
