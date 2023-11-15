@@ -159,17 +159,12 @@ def generate_paragraphs(requirements: List[str], resume_documents: List[str], to
     doc_emb = np.asarray(doc_emb)
 
     query = """Critical job requirement for applying."""
-    query_emb = co.embed([query], input_type="search_query", model="embed-english-v3.0").embeddings
-    query_emb = np.asarray(query_emb)
-    query_emb.shape
 
-    #Compute the dot product between query embedding and document embedding
-    scores = np.dot(query_emb, doc_emb.T)[0]
-
-    rerank_hits = co.rerank(query=query, documents=docs, top_n=min(len(documents), 5), model='rerank-multilingual-v2.0')
+    rerank_hits = co.rerank(query=query, documents=responses, top_n=min(len(documents), 5), model='rerank-multilingual-v2.0').results
 
     # reverse it, because LLMs have a recency bias
     rerank_hits.reverse()
+    # rerank_hits.reverse()
     input_credentials = ("\n - ").join(responses)
 
     para_one_prompt = f"""
@@ -182,25 +177,10 @@ def generate_paragraphs(requirements: List[str], resume_documents: List[str], to
     Remember, do not prompt the user as a chat bot. 
     """
 
-    # print(para_one_prompt)
-
-
-    # para_two_prompt = f"""
-    # Condense the following information into the second paragraph of a cover letter: 
-    # {(' ').join(responses[len(responses)//2:])}
-    # Write in first person. Don't include information that has no evidence.
-    # """
-
-    # with ThreadPoolExecutor(max_workers=2) as executor:
-    #     futures = [executor.submit(co.generate, para_one_prompt, temperature=0.0), executor.submit(co.generate, para_two_prompt, temperature=0.0)]
-    #     responses = [future.result() for future in futures]
-
-
     # k value flattens the probability distribution 
     # frequency penalty decreases likelihood of repititon of specific tokens. (further decreasing ai content detection.)
     # frequency penalty also decreases the likelihood of formatting stuff like \n appearing. 
     # tempurature of 1.2 seems to be a sweet spot. I think anything [1.0, 1.5] is good for natural text generation.
-    
     result = co.generate(para_one_prompt, k=25, temperature=0.96, frequency_penalty=0.2, num_generations=1) 
 
     return {'para_A' : result.data[0], 'para_B' : 'result.data[1]'}
