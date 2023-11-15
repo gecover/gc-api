@@ -125,12 +125,12 @@ async def read_pdf(file: Annotated[bytes, File()], token: Annotated[str, Depends
     return {"contents": docs }
 
 @app.post("/generate_paragraphs/")
-def generate_paragraphs(requirements: List[str], resume_documents: List[str]):#, token: Annotated[str, Depends(oauth2_scheme)]
+def generate_paragraphs(requirements: List[str], resume_documents: List[str], token: Annotated[str, Depends(oauth2_scheme)]):#, token: Annotated[str, Depends(oauth2_scheme)]
     # get user data from JWT
-    # data = supabase.auth.get_user(token)
+    data = supabase.auth.get_user(token)
 
     # assert that the user is authenticated.
-    # assert data.user.aud == 'authenticated', "402: not authenticated."
+    assert data.user.aud == 'authenticated', "402: not authenticated."
 
     documents = []
 
