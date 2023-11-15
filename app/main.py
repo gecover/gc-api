@@ -165,7 +165,7 @@ def generate_paragraphs(requirements: List[str], resume_documents: List[str], to
     # reverse it, because LLMs have a recency bias
     rerank_hits.reverse()
     # rerank_hits.reverse()
-    input_credentials = ("\n - ").join(responses)
+    input_credentials = ("\n - ").join(rerank_hits)
 
     para_one_prompt = f"""
     Summarize the credentials below into paragraph form:
