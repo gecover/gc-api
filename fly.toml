@@ -1,0 +1,31 @@
+# fly.toml app configuration file generated for gc-api on 2023-11-13T19:47:44-05:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "gc-api"
+primary_region = "yyz"
+
+[build]
+
+[env]
+  ANON_ROLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9kZ29hanJyY21kY2dxeHZ0ZnF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTk2MzY5NTksImV4cCI6MjAxNTIxMjk1OX0.VVZroXqDq7D2vUgNKxPQ28D-p9LfxLccsh-LwIsNy5Q"
+  CO_API_KEY = "AdgMMzjBDPPc0weTzZcxksZjKEgn7Vjf5I2lRoz0"
+  PORT = "5000"
+  SERVICE_ROLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9kZ29hanJyY21kY2dxeHZ0ZnF0Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY5OTYzNjk1OSwiZXhwIjoyMDE1MjEyOTU5fQ.6iQb6_4w7XzVwtijIeuCx4MO6B0Lwdi6Efta4oc0UsY"
+  SUPABASE_ENDPOINT = "https://odgoajrrcmdcgqxvtfqt.supabase.co"
+  SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9kZ29hanJyY21kY2dxeHZ0ZnF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTk2MzY5NTksImV4cCI6MjAxNTIxMjk1OX0.VVZroXqDq7D2vUgNKxPQ28D-p9LfxLccsh-LwIsNy5Q"
+  SUPABASE_URL = "https://odgoajrrcmdcgqxvtfqt.supabase.co"
+  database = "postgres"
+  host = "db.odgoajrrcmdcgqxvtfqt.supabase.co"
+  password = "nJoP6AMfO8GLlF2b"
+  port = "5432"
+  user = "postgres"
+
+[http_service]
+  internal_port = 5000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]

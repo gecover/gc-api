@@ -67,11 +67,11 @@ def read_root():
     return {"Hello": "World"}
 
 @app.post("/extract_url/")
-async def extract_url(payload: URLPayload, token: Annotated[str, Depends(oauth2_scheme)]):
-    # get user data from JWT
-    data = supabase.auth.get_user(token)
-    # assert that the user is authenticated.
-    assert data.user.aud == 'authenticated', "402: not authenticated."
+async def extract_url(payload: URLPayload): #, token: Annotated[str, Depends(oauth2_scheme)]
+    # # get user data from JWT
+    # data = supabase.auth.get_user(token)
+    # # assert that the user is authenticated.
+    # assert data.user.aud == 'authenticated', "402: not authenticated."
     
     source = urllib.request.urlopen(payload.url)
     soup = bs.BeautifulSoup(source,'lxml')
@@ -95,7 +95,6 @@ async def extract_url(payload: URLPayload, token: Annotated[str, Depends(oauth2_
         company = soup.find("a", class_="topcard__org-name-link topcard__flavor--black-link").get_text()
         pattern = r"(?<=\n)(.*?)(?=\n)"
         clean_company = re.findall(pattern, company)[0]
-        print("hello")
         job_title = soup.find("h1", class_="top-card-layout__title font-sans text-lg papabear:text-xl font-bold leading-open text-color-text mb-0 topcard__title").get_text()
         return {"contents" : clean_response, 'company': clean_company, 'job_title': job_title}
     else:
@@ -126,12 +125,12 @@ async def read_pdf(file: Annotated[bytes, File()], token: Annotated[str, Depends
     return {"contents": docs }
 
 @app.post("/generate_paragraphs/")
-def generate_paragraphs(requirements: List[str], resume_documents: List[str], token: Annotated[str, Depends(oauth2_scheme)]):#, token: Annotated[str, Depends(oauth2_scheme)]
+def generate_paragraphs(requirements: List[str], resume_documents: List[str]):#, token: Annotated[str, Depends(oauth2_scheme)]
     # get user data from JWT
-    data = supabase.auth.get_user(token)
+    # data = supabase.auth.get_user(token)
 
     # assert that the user is authenticated.
-    assert data.user.aud == 'authenticated', "402: not authenticated."
+    # assert data.user.aud == 'authenticated', "402: not authenticated."
 
     documents = []
 
@@ -142,11 +141,12 @@ def generate_paragraphs(requirements: List[str], resume_documents: List[str], to
 
     for i, req in enumerate(requirements):
         query = f""" 
-        Explain in a couple sentences in first person about how I satisfy the following job requirement: 
+        Output a paragraph for me.
+        Explain in first person about how I satisfy the following job requirement:
 
         {req}
-
-        My resume is in the documents supplied. Remember, make it brief, a maximum of 4 sentences.
+        
+        Remember to output like you are speaking to someone and do not prompt the user.
         """
         queries.append(query)
 
@@ -154,18 +154,23 @@ def generate_paragraphs(requirements: List[str], resume_documents: List[str], to
         futures = [executor.submit(co.chat, query, documents=documents) for query in queries]
         responses = [future.result().text for future in futures]
 
+    # we can make the assumption that credentials listed first on the job posting
+    # are the most important. And since LLMs have a recency bias (tokens closer to 
+    # the end are considered more often) we reverse the list.
+    responses.reverse()
     input_credentials = ("\n - ").join(responses)
 
     para_one_prompt = f"""
-    Write two professional paragraphs. Do not act as a chat bot.
-    Below is a list of my credentials: 
+    Write two professional paragraphs summarizing the points below.
 
     {input_credentials}
 
     Write in first person. Take a breath, and write like you are speaking to someone.
 
-    Remember to not talk to the user as a chat bot. 
+    Remember, do not prompt the user as a chat bot. 
     """
+
+    print(para_one_prompt)
 
 
     # para_two_prompt = f"""
