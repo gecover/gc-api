@@ -18,6 +18,9 @@ from pydantic import BaseModel
 
 class URLPayload(BaseModel):
     url: str
+
+class ModelPayload(BaseModel):
+    model: str
     
 # llm sherpa for reading pdfs
 llmsherpa_api_url = "https://readers.llmsherpa.com/api/document/developer/parseDocument?renderFormat=all"
@@ -115,13 +118,10 @@ async def read_pdf(file: Annotated[bytes, File()], token: Annotated[str, Depends
     return {"contents": docs }
 
 @app.post("/generate_paragraphs/")
-def generate_paragraphs(requirements: List[str], resume_documents: List[str], model: str, token: Annotated[str, Depends(oauth2_scheme)]):#, token: Annotated[str, Depends(oauth2_scheme)]
-    # get user data from JWT
+def generate_paragraphs(requirements: List[str], resume_documents: List[str], model: ModelPayload, token: Annotated[str, Depends(oauth2_scheme)]):#, token: Annotated[str, Depends(oauth2_scheme)]
+    # # get user data from JWT
     data = supabase.auth.get_user(token)
-    #model = 'true'
-    print('BOOL: ', model)
-
-    # assert that the user is authenticated.
+    # # assert that the user is authenticated.
     assert data.user.aud == 'authenticated', "402: not authenticated."
 
     documents = []
@@ -179,8 +179,8 @@ def generate_paragraphs(requirements: List[str], resume_documents: List[str], mo
     # tempurature of 1.2 seems to be a sweet spot. I think anything [1.0, 1.5] is good for natural text generation.
 
     # ALTMAN MODE
-    if (model == 'true'):
-        print('ALTMAN MOOOOOOODE')
+    if (model.model == 'altman'):
+        # print('ALTMAN MOOOOOOODE')
         result = co.generate(model='e1f1b8c8-f87a-4fd3-9346-99068e5b7036-ft', prompt=para_one_prompt, k=25, temperature=0.96, frequency_penalty=0.2, num_generations=1) 
     else:
         result = co.generate(para_one_prompt, k=25, temperature=0.96, frequency_penalty=0.2, num_generations=1) 
