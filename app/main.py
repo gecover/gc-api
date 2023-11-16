@@ -1,29 +1,19 @@
 from typing import Union, Annotated, List
 import os
-
 import numpy as np
 import json
 import re
-
 import cohere
-
 from llmsherpa.readers import LayoutPDFReader
-
 from fastapi import FastAPI, File, UploadFile, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
-
 from concurrent.futures import ThreadPoolExecutor
-
 from supabase import create_client, Client
-
-
 from dotenv import find_dotenv
 from dotenv import load_dotenv
-
 import bs4 as bs
 import urllib.request
-
 from pydantic import BaseModel
 
 class URLPayload(BaseModel):
@@ -186,5 +176,7 @@ def generate_paragraphs(requirements: List[str], resume_documents: List[str], to
     # frequency penalty also decreases the likelihood of formatting stuff like \n appearing. 
     # tempurature of 1.2 seems to be a sweet spot. I think anything [1.0, 1.5] is good for natural text generation.
     result = co.generate(para_one_prompt, k=25, temperature=0.96, frequency_penalty=0.2, num_generations=1) 
+    # ALTMAN MODE
+    #result = co.generate(model='e1f1b8c8-f87a-4fd3-9346-99068e5b7036-ft', prompt=para_one_prompt, k=25, temperature=0.96, frequency_penalty=0.2, num_generations=1) 
 
     return {'para_A' : result.data[0], 'para_B' : 'result.data[1]'}
