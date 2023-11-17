@@ -167,14 +167,21 @@ def generate_paragraphs(requirements: List[str], resume_documents: List[str], mo
     # rerank_hits.reverse()
     input_credentials = ("\n - ").join(rerank_results)
     
-    response  = co.summarize(
-        text=input_credentials,
-        format="paragraph",
-        temperature=0.96,
-        length='long',
-        model='command-nightly',
-        extractiveness='auto',
-        additional_command='Generate a summary of the first person credentials being provided. The summary should maintain the first-person prose. Remove all open-ended questions and placeholder tokens like [company name] or [first name] as examples.'
-    )
-    # print(response)
-    return {'para_A' : response.summary, 'para_B' : 'result.data[1]'}
+    if model == 'altman':
+        result = co.generate(model='e1f1b8c8-f87a-4fd3-9346-99068e5b7036-ft', prompt=para_one_prompt, k=25, temperature=0.96, frequency_penalty=0.2, num_generations=1) 
+        return {'para_A' : result.data[0], 'para_B' : 'result.data[1]'}    
+
+    else:
+        response  = co.summarize(
+                text=input_credentials,
+                format="paragraph",
+                temperature=0.96,
+                length='long',
+                model='command-nightly',
+                extractiveness='auto',
+                additional_command='Generate a summary of the first person credentials being provided. The summary should maintain the first-person prose. Remove all open-ended questions and placeholder tokens like [company name] or [first name] as examples.'
+            )
+        return {'para_A' : response.summary, 'para_B' : 'result.data[1]'}
+
+    return {'para_A' : "something broke", 'para_B' : 'result.data[1]'}    
+
