@@ -168,6 +168,19 @@ def generate_paragraphs(requirements: List[str], resume_documents: List[str], mo
     input_credentials = ("\n - ").join(rerank_results)
     
     if model == 'altman':
+        para_one_prompt = f"""
+        You are acting as a personal professional writer.
+        note: DO NOT prompt the user as a chat bot. Don't repeat skills once you have said them. 
+        note: Make it a maximum of two paragraphs.  
+        note:  Please only output the paragraph. Do not preface the paragraphs with "sure, here are those paragraphs:". Do not finish the paragraph with anything like  "anything else I can help with?".
+        note: if you don't have the information, do not output tokens like "[Company name]" or "[first name]" as placeholders.
+        Write in first person, and be positive and enthusiastic!
+        
+        The points to summarize:
+        - {input_credentials}
+
+        First person summary:   
+        """
         result = co.generate(model='e1f1b8c8-f87a-4fd3-9346-99068e5b7036-ft', prompt=para_one_prompt, k=25, temperature=0.96, frequency_penalty=0.2, num_generations=1) 
         return {'para_A' : result.data[0], 'para_B' : 'result.data[1]'}    
 
