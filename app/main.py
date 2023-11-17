@@ -75,10 +75,10 @@ async def extract_url(payload: URLPayload, token: Annotated[str, Depends(oauth2_
         # keeping it at zero allows us to better experiment and tweak things, knowing the LLM is a control.
         response = co.summarize( 
             text=div.get_text(),
-            length='long',
+            length='short',
             format='bullets',
             model='command',
-            additional_command='ONLY EXTRACT REQUIRED QUALIFICATIONS.',
+            additional_command='extract the most important qualifications.',
             extractiveness='high',
             temperature=0.0,
         ) 

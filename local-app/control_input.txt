@@ -42,7 +42,7 @@
     "Machine Learning Engineering for Production (MLOps) Specialization\nCoursera\n10/2023 Online",
     "Coursera\n10/2023 Online"
   ],
-  "model": {
-    "model" : "normal
+"model": {
+    "model": "string"
   }
 }
