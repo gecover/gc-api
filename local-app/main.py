@@ -60,11 +60,11 @@ def read_root():
     return {"Hello": "World"}
 
 @app.post("/extract_url/")
-async def extract_url(payload: URLPayload, token: Annotated[str, Depends(oauth2_scheme)]): #, token: Annotated[str, Depends(oauth2_scheme)]
-    # get user data from JWT
-    data = supabase.auth.get_user(token)
-    # assert that the user is authenticated.
-    assert data.user.aud == 'authenticated', "402: not authenticated."
+async def extract_url(payload: URLPayload): #, token: Annotated[str, Depends(oauth2_scheme)]
+    # # get user data from JWT
+    # data = supabase.auth.get_user(token)
+    # # assert that the user is authenticated.
+    # assert data.user.aud == 'authenticated', "402: not authenticated."
     
     source = urllib.request.urlopen(payload.url)
     soup = bs.BeautifulSoup(source,'lxml')
@@ -96,13 +96,13 @@ async def extract_url(payload: URLPayload, token: Annotated[str, Depends(oauth2_
 
 
 @app.post("/read_pdf/")
-async def read_pdf(file: Annotated[bytes, File()], token: Annotated[str, Depends(oauth2_scheme)]):
+async def read_pdf(file: Annotated[bytes, File()]):
     
     # get user data from JWT
-    data = supabase.auth.get_user(token)
+    # data = supabase.auth.get_user(token)
 
-    # assert that the user is authenticated.
-    assert data.user.aud == 'authenticated', "402: not authenticated."
+    # # assert that the user is authenticated.
+    # assert data.user.aud == 'authenticated', "402: not authenticated."
 
     # the path_or_url is fake, ignored when contents is set.
     try:
@@ -118,11 +118,11 @@ async def read_pdf(file: Annotated[bytes, File()], token: Annotated[str, Depends
     return {"contents": docs }
 
 @app.post("/generate_paragraphs/")
-def generate_paragraphs(requirements: List[str], resume_documents: List[str], model: ModelPayload, token: Annotated[str, Depends(oauth2_scheme)]):#, token: Annotated[str, Depends(oauth2_scheme)]
+def generate_paragraphs(requirements: List[str], resume_documents: List[str], model: ModelPayload):#, token: Annotated[str, Depends(oauth2_scheme)]
     # # get user data from JWT
-    data = supabase.auth.get_user(token)
-    # # assert that the user is authenticated.
-    assert data.user.aud == 'authenticated', "402: not authenticated."
+    # data = supabase.auth.get_user(token)
+    # # # assert that the user is authenticated.
+    # assert data.user.aud == 'authenticated', "402: not authenticated."
 
     documents = []
 
@@ -166,6 +166,34 @@ def generate_paragraphs(requirements: List[str], resume_documents: List[str], mo
 
     # rerank_hits.reverse()
     input_credentials = ("\n - ").join(rerank_results)
+
+    para_one_prompt = f"""
+    You are acting as a personal professional writer.
+    note: DO NOT prompt the user as a chat bot. Don't repeat skills once you have said them. 
+    note: Make it a maximum of two paragraphs.  
+    note:  Please only output the paragraph. Do not preface the paragraphs with "sure, here are those paragraphs:". Do not finish the paragraph with anything like  "anything else I can help with?".
+    note: if you don't have the information, do not output tokens like "[Company name]" or "[first name]" as placeholders.
+    Write in first person, and be positive and enthusiastic!
+    
+    The points to summarize:
+    - {input_credentials}
+
+    First person summary:   
+    """
+
+    # print(para_one_prompt)
+
+    # k value flattens the probability distribution 
+    # frequency penalty decreases likelihood of repititon of specific tokens. (further decreasing ai content detection.)
+    # frequency penalty also decreases the likelihood of formatting stuff like \n appearing. 
+    # tempurature of 1.2 seems to be a sweet spot. I think anything [1.0, 1.5] is good for natural text generation.
+
+    # ALTMAN MODE
+    # if (model.model == 'altman'):
+    #     # print('ALTMAN MOOOOOOODE')
+    #     result = co.generate(model='e1f1b8c8-f87a-4fd3-9346-99068e5b7036-ft', prompt=para_one_prompt, k=25, temperature=0.96, frequency_penalty=0.2, num_generations=1) 
+    # else:
+    #     result = co.generate(para_one_prompt, k=25, temperature=0.96, frequency_penalty=0.2, num_generations=1) 
     
     response  = co.summarize(
         text=input_credentials,
