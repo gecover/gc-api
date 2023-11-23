@@ -88,7 +88,6 @@ class ScrapingClient:
         proxy_url = 'https://proxy.scrapeops.io/v1/?' + urlencode(payload)
         return proxy_url
     
-    
     def send_request(self, url, method='GET', scrapeops_proxy_settings=None, **kwargs):
         """
             Sends HTTP request and retries failed responses.
@@ -161,19 +160,23 @@ class ScrapingClient:
                                 'jobTitle': job['jobInfoHeaderModel']['jobTitle'] if job['jobInfoHeaderModel']['jobTitle'] is not None else '',
                                 'jobDescription': job['sanitizedJobDescription'] if job['sanitizedJobDescription'] is not None else '',
                             }
+                            def is_qualification_header(tag):
+                                return (tag.name == 'h2' or tag.name == 'p') and 'Qualifications' in tag.text
+                            
+                            #print('JOB DESC: ', job_data[job_id]['jobDescription'])
                             soup = bs.BeautifulSoup(job_data[job_id]['jobDescription'], 'html.parser')
-                            qualifications_header = soup.find('h2', string=lambda text: 'Qualifications' in text)
+                            qualifications_headers = soup.find(is_qualification_header)
+            
                             qualifications = []
-
-                            if qualifications_header:
+                            if qualifications_headers:
                                 # Find the next <ul> tag after the <h2> tag
-                                ul_tag = qualifications_header.find_next('ul')
+                                ul_tag = qualifications_headers.find_next('ul')
                                 if ul_tag:
                                     for li_tag in ul_tag.find_all('li'):
                                         qualifications.append(li_tag.get_text())
 
-                            # for qualification in qualifications:
-                            #     print('qualifcation: ', qualification)
+                            for qualification in qualifications:
+                                print('qualifcation: ', qualification)
                             # summarize with cohere
                             # tempurature zero for the time being.
                             # keeping it at zero allows us to better experiment and tweak things, knowing the LLM is a control.
