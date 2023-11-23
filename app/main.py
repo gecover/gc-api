@@ -37,7 +37,7 @@ class ModelPayload(BaseModel):
     
 app = FastAPI()
 
-#oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 # Specify your frontend origin here
 origins = [
@@ -57,11 +57,11 @@ def read_root():
     return {"Hello": "World"}
 
 @app.post("/extract_url/")
-async def extract_url(payload: URLPayload): #, token: Annotated[str, Depends(oauth2_scheme)]
+async def extract_url(payload: URLPayload, token: Annotated[str, Depends(oauth2_scheme)]): #, token: Annotated[str, Depends(oauth2_scheme)]
     # get user data from JWT
-   # data = supabase.auth.get_user(token)
+    data = supabase.auth.get_user(token)
     # assert that the user is authenticated.
-    #assert data.user.aud == 'authenticated', "402: not authenticated."
+    assert data.user.aud == 'authenticated', "402: not authenticated."
 
     response = scrape_client.send_request(payload.url)
     if response:
@@ -71,13 +71,13 @@ async def extract_url(payload: URLPayload): #, token: Annotated[str, Depends(oau
         return {"error" : "Unable to extract job data from URL!"}
 
 @app.post("/read_pdf/")
-async def read_pdf(file: Annotated[bytes, File()]):
+async def read_pdf(file: Annotated[bytes, File()], token: Annotated[str, Depends(oauth2_scheme)]):
     
     # get user data from JWT
-    #data = supabase.auth.get_user(token)
+    data = supabase.auth.get_user(token)
 
     # assert that the user is authenticated.
-    #assert data.user.aud == 'authenticated', "402: not authenticated."
+    assert data.user.aud == 'authenticated', "402: not authenticated."
 
     # the path_or_url is fake, ignored when contents is set.
     try:
@@ -93,11 +93,11 @@ async def read_pdf(file: Annotated[bytes, File()]):
     return {"contents": docs }
 
 @app.post("/generate_paragraphs/")
-def generate_paragraphs(requirements: List[str], resume_documents: List[str], model: ModelPayload):#, token: Annotated[str, Depends(oauth2_scheme)]
+def generate_paragraphs(requirements: List[str], resume_documents: List[str], model: ModelPayload, token: Annotated[str, Depends(oauth2_scheme)]):#, token: Annotated[str, Depends(oauth2_scheme)]
     # # get user data from JWT
-   # data = supabase.auth.get_user(token)
+    data = supabase.auth.get_user(token)
     # # assert that the user is authenticated.
-    #assert data.user.aud == 'authenticated', "402: not authenticated."
+    assert data.user.aud == 'authenticated', "402: not authenticated."
 
     documents = []
 
