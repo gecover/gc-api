@@ -12,7 +12,7 @@ from supabase import create_client, Client
 from dotenv import find_dotenv
 from dotenv import load_dotenv
 from pydantic import BaseModel
-import io
+from app.scrape.ScrapeClient import ScrapingClient
 from openai import OpenAI
 
 
@@ -27,8 +27,10 @@ load_dotenv(env_file)
 
 url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY")
-supabase: Client = create_client(url, key)
+SCRAPE_CLIENT_API_KEY = os.environ.get("SCRAPE_API_KEY")
 
+supabase: Client = create_client(url, key)
+scrape_client = ScrapingClient(scrapeops_api_key=SCRAPE_CLIENT_API_KEY, num_concurrent_threads=5)
 client = OpenAI()
 
 app = FastAPI()
