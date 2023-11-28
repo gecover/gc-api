@@ -1,6 +1,7 @@
 from typing import Union, Annotated, List
 import os
 import numpy as np
+import time
 import json
 import re
 import cohere
@@ -15,19 +16,38 @@ from dotenv import load_dotenv
 import bs4 as bs
 import urllib.request
 from pydantic import BaseModel
+from openai import OpenAI
+import logging
+
+# logging.basicConfig()
+# logging.getLogger().setLevel(logging.DEBUG)
+
+# requests_log = logging.getLogger("requests")
+# requests_log.setLevel(logging.ERROR)
+# requests_log.propagate = True
+
+import boto3
+import io
+
+AWS_ACCESS_KEY = os.environ.get("AWS_ACCESS_KEY")
+AWS_SECRET_KEY = os.environ.get("AWS_SECRET_KEY")
+
+session = boto3.Session(aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY)
+client = session.client('textract', region_name='us-east-1')
+
 
 class URLPayload(BaseModel):
     url: str
 
 class ModelPayload(BaseModel):
     model: str
-    
+
 # llm sherpa for reading pdfs
 llmsherpa_api_url = "https://readers.llmsherpa.com/api/document/developer/parseDocument?renderFormat=all"
 pdf_reader = LayoutPDFReader(llmsherpa_api_url)
 
 
-env_file = find_dotenv(".env.dev")
+env_file = find_dotenv(".env.local")
 load_dotenv(env_file)
 
 url: str = os.environ.get("SUPABASE_URL")
@@ -36,6 +56,8 @@ supabase: Client = create_client(url, key)
 
 cohere_key = os.getenv("CO_API_KEY")
 co = cohere.Client(cohere_key)
+
+openai = OpenAI()
 
 app = FastAPI()
 
@@ -73,17 +95,12 @@ async def extract_url(payload: URLPayload): #, token: Annotated[str, Depends(oau
         # summarize with cohere
         # tempurature zero for the time being.
         # keeping it at zero allows us to better experiment and tweak things, knowing the LLM is a control.
-        response = co.summarize( 
-            text=div.get_text(),
-            length='short',
-            format='bullets',
-            model='command',
-            additional_command='extract the most important qualifications.',
-            extractiveness='high',
-            temperature=0.0,
-        ) 
+        prompt = f"Please extract the most important job requirements from the following job posting and list them in point form: {div.get_text()}."
+        completion = openai.chat.completions.create(model="gpt-3.5-turbo", messages=[{"role": "user", "content": prompt}])
+        response = completion.choices[0].message.content
+        
         # first element is always ""
-        clean_response = response.summary.split('- ')[1:]
+        clean_response = response.split('- ')[1:]
 
         company = soup.find("a", class_="topcard__org-name-link topcard__flavor--black-link").get_text()
         pattern = r"(?<=\n)(.*?)(?=\n)"
@@ -106,103 +123,75 @@ async def read_pdf(file: Annotated[bytes, File()]):
 
     # the path_or_url is fake, ignored when contents is set.
     try:
-        content = pdf_reader.read_pdf(path_or_url="https://someexapmple.com/myfile.pdf", contents=file)
+        # content = client.detect_document_text(Document={'Bytes': file})
+        response = openai.files.create(
+            file=file,
+            purpose="assistants"
+        )
+        return {"id" : response.id}
     except:
         # very mid error handling
-        return {"contents" : []}
-
-    docs = []
-    for section in content.sections():
-        docs.append(section.to_text(include_children=True, recurse=True))
-    
-    return {"contents": docs }
+        return {"id" : None}
 
 @app.post("/generate_paragraphs/")
-def generate_paragraphs(requirements: List[str], resume_documents: List[str], model: ModelPayload):#, token: Annotated[str, Depends(oauth2_scheme)]
+def generate_paragraphs(file: Annotated[bytes, File()], requirements: str):#, token: Annotated[str, Depends(oauth2_scheme)]
     # # get user data from JWT
     # data = supabase.auth.get_user(token)
     # # # assert that the user is authenticated.
     # assert data.user.aud == 'authenticated', "402: not authenticated."
 
-    documents = []
+    try:
+        # content = client.detect_document_text(Document={'Bytes': file})
+        file = openai.files.create(
+            file=file,
+            purpose="assistants"
+        )
+    except:
+        return {"id" : None}
 
-    for doc in resume_documents:
-        documents.append({"snippet" : doc})
+    # input_credentials = ("\n - ").join(requirements)
 
-    queries = []
 
-    for i, req in enumerate(requirements):
-        query = f""" 
-        You are acting as a personal professional writer.
-        Explain in two sentences about how I satisfy the following job requirement written in the first person:
-        note: Do not act as a chat bot. Do not preface the response with "sure, here is that summary:". 
-        note: Do not finish the paragraph with anything like  "anything else I can help with?" or "is there anything else you would like to know?".
-        note: If you don't have the information, do not output things like [Company name] or [first name] placeholders.
-        Reference the documents provided that contain information about me. Be positive and enthusiastic!
+    prompt = f"""
+    - {requirements}
 
-        Job requirement:
-        {req}
-
-        Summary of why I satisfy the job requirement in 2-3 sentences:
-        """
-        queries.append(query)
-
-    with ThreadPoolExecutor(max_workers=len(requirements)) as executor:
-        futures = [executor.submit(co.chat, query, documents=documents) for query in queries]
-        responses = [future.result().text for future in futures]
-
-    #Encode your documents with input type 'search_document'
-    doc_emb = co.embed(responses, input_type="search_document", model="embed-english-v3.0").embeddings
-    doc_emb = np.asarray(doc_emb)
-
-    query = """ The most important job requirement to satisfy."""
-
-    rerank_hits = co.rerank(query=query, documents=responses, top_n=min(len(documents), 5), model='rerank-multilingual-v2.0').results
-    
-    rerank_results = [x.document['text'] for x in rerank_hits]
-
-    # reverse it, because LLMs have a recency bias
-    rerank_results.reverse()
-
-    # rerank_hits.reverse()
-    input_credentials = ("\n - ").join(rerank_results)
-
-    para_one_prompt = f"""
-    You are acting as a personal professional writer.
-    note: DO NOT prompt the user as a chat bot. Don't repeat skills once you have said them. 
-    note: Make it a maximum of two paragraphs.  
-    note:  Please only output the paragraph. Do not preface the paragraphs with "sure, here are those paragraphs:". Do not finish the paragraph with anything like  "anything else I can help with?".
-    note: if you don't have the information, do not output tokens like "[Company name]" or "[first name]" as placeholders.
-    Write in first person, and be positive and enthusiastic!
-    
-    The points to summarize:
-    - {input_credentials}
-
-    First person summary:   
+    Could you write me a couple paragraphs without an introduction/outro about why I am the right candidate for the job? The document you have access to is my CV.
     """
 
-    # print(para_one_prompt)
+    print(prompt)
 
-    # k value flattens the probability distribution 
-    # frequency penalty decreases likelihood of repititon of specific tokens. (further decreasing ai content detection.)
-    # frequency penalty also decreases the likelihood of formatting stuff like \n appearing. 
-    # tempurature of 1.2 seems to be a sweet spot. I think anything [1.0, 1.5] is good for natural text generation.
-
-    # ALTMAN MODE
-    # if (model.model == 'altman'):
-    #     # print('ALTMAN MOOOOOOODE')
-    #     result = co.generate(model='e1f1b8c8-f87a-4fd3-9346-99068e5b7036-ft', prompt=para_one_prompt, k=25, temperature=0.96, frequency_penalty=0.2, num_generations=1) 
-    # else:
-    #     result = co.generate(para_one_prompt, k=25, temperature=0.96, frequency_penalty=0.2, num_generations=1) 
-    
-    response  = co.summarize(
-        text=input_credentials,
-        format="paragraph",
-        temperature=0.96,
-        length='long',
-        model='command-nightly',
-        extractiveness='auto',
-        additional_command='Generate a summary of the first person credentials being provided. The summary should maintain the first-person prose. Remove all open-ended questions and placeholder tokens like [company name] or [first name] as examples.'
+    thread = openai.beta.threads.create(
+        messages=[
+            {
+            "role": "user",
+            "content": prompt,
+            "file_ids": [file.id]
+            }
+        ]
     )
-    # print(response)
-    return {'para_A' : response.summary, 'para_B' : 'result.data[1]'}
+
+    run = openai.beta.threads.runs.create(
+        thread_id=thread.id,
+        assistant_id="asst_C0GRyfBLNOXtrxlOPpA4ouvr",
+    )
+
+    while True:
+        run = openai.beta.threads.runs.retrieve(
+            thread_id=thread.id,
+            run_id=run.id
+        )
+        if run.status == 'completed':
+            break
+
+        time.sleep(3)
+
+    messages = openai.beta.threads.messages.list(
+        thread_id=thread.id
+    )
+
+    delete_file = openai.files.delete(file.id)
+    delete_thread = openai.beta.threads.delete(thread.id)
+
+    # print(messages.data[0].content[0].text.value)
+    # print(delete_thread)
+    return {'para_A' : messages.data[0].content[0].text.value, 'para_B' : 'result.data[1]'}

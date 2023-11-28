@@ -12,6 +12,7 @@ from urllib.parse import urlencode
 import logging
 from dotenv import load_dotenv, find_dotenv
 from app.cohere.CohereClient import CohereClient
+from openai import OpenAI
 
 # logging.basicConfig()
 # logging.getLogger().setLevel(logging.DEBUG)
@@ -24,8 +25,7 @@ dotenv_path = find_dotenv('.env.dev', usecwd=True)
 if dotenv_path:
     load_dotenv(dotenv_path)
 
-COHERE_API_KEY = os.getenv("CO_API_KEY")
-co = CohereClient(COHERE_API_KEY)
+client = OpenAI()
 
 class ScrapingClient:
     
@@ -110,20 +110,12 @@ class ScrapingClient:
                 soup = bs.BeautifulSoup(source,'lxml')
                 div = soup.find("div", class_ = "show-more-less-html__markup show-more-less-html__markup--clamp-after-5 relative overflow-hidden" )
                 if div:
-                    # summarize with cohere
-                    # tempurature zero for the time being.
-                    # keeping it at zero allows us to better experiment and tweak things, knowing the LLM is a control.
-                    response = co.summarize( 
-                        text=div.get_text(),
-                        length='short',
-                        format='bullets',
-                        model='command',
-                        additional_command='extract the most important qualifications.',
-                        extractiveness='high',
-                        temperature=0.0,
-                    ) 
+                     prompt = f"Please extract the most important job requirements from the following job posting and list them in point form: {div.get_text()}."
+                    completion = client.chat.completions.create(model="gpt-3.5-turbo", messages=[{"role": "user", "content": prompt}])
+                    response = completion.choices[0].message.content
+                    
                     # first element is always ""
-                    clean_response = response.summary.split('- ')[1:]
+                    clean_response = response.split('- ')[1:]
 
                     company = soup.find("a", class_="topcard__org-name-link topcard__flavor--black-link").get_text()
                     pattern = r"(?<=\n)(.*?)(?=\n)"
@@ -175,20 +167,13 @@ class ScrapingClient:
 
                             for qualification in qualifications:
                                 print('qualifcation: ', qualification)
-                            # summarize with cohere
-                            # tempurature zero for the time being.
-                            # keeping it at zero allows us to better experiment and tweak things, knowing the LLM is a control.
-                            qualificationsResponse = co.summarize( 
-                                text=', '.join(qualifications),
-                                length='short',
-                                format='bullets',
-                                model='command',
-                                additional_command='extract the most important qualifications.',
-                                extractiveness='high',
-                                temperature=0.0,
-                            ) 
+                            
+                            prompt = f"Please extract the most important job requirements from the following job posting and list them in point form: {div.get_text()}."
+                            completion = client.chat.completions.create(model="gpt-3.5-turbo", messages=[{"role": "user", "content": prompt}])
+                            response = completion.choices[0].message.content
+                        
                             # first element is always ""
-                            clean_response = qualificationsResponse.summary.split('- ')[1:]
+                            clean_response = response.split('- ')[1:]
                             return {"contents" : clean_response, 'company': job_data[job_id]['company'], 'job_title': job_data[job_id]['jobTitle']}
                     except Exception as e:
                         print('Request error:', e)
