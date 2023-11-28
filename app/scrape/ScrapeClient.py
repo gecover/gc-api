@@ -140,7 +140,6 @@ class ScrapingClient:
             job_id = ''
             if match:
                 job_id = match.group(1)
-                #print(job_id)
             try:
                 indeed_job_url = 'https://www.indeed.com/m/basecamp/viewjob?viewtype=embedded&jk=' + job_id
                 if self.scrapeops_proxy_enabled and self.scrapeops_api_key is not None:
@@ -160,12 +159,11 @@ class ScrapingClient:
                                 'jobTitle': job['jobInfoHeaderModel']['jobTitle'] if job['jobInfoHeaderModel']['jobTitle'] is not None else '',
                                 'jobDescription': job['sanitizedJobDescription'] if job['sanitizedJobDescription'] is not None else '',
                             }
-                            def is_qualification_header(tag):
-                                return (tag.name == 'h2' or tag.name == 'p') and 'Qualifications' in tag.text
+                            def is_qualification_or_requirement_header(tag):
+                                return (tag.name == 'h2' or tag.name == 'p') and ('Qualifications' in tag.text or 'Requirements' in tag.text)
                             
-                            #print('JOB DESC: ', job_data[job_id]['jobDescription'])
                             soup = bs.BeautifulSoup(job_data[job_id]['jobDescription'], 'html.parser')
-                            qualifications_headers = soup.find(is_qualification_header)
+                            qualifications_headers = soup.find(is_qualification_or_requirement_header)
             
                             qualifications = []
                             if qualifications_headers:
