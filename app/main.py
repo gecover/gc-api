@@ -70,19 +70,21 @@ async def extract_url(payload: URLPayload, token: Annotated[str, Depends(oauth2_
 
 @app.post("/generate_paragraphs/")
 def generate_paragraphs(file: Annotated[bytes, File()], requirements: str, token: Annotated[str, Depends(oauth2_scheme)]):#, token: Annotated[str, Depends(oauth2_scheme)]
-    # # get user data from JWT
+    # get user data from JWT
     data = supabase.auth.get_user(token)
-    # # assert that the user is authenticated.
+    # assert that the user is authenticated.
     assert data.user.aud == 'authenticated', "402: not authenticated."
 
     try:
         # content = client.detect_document_text(Document={'Bytes': file})
-        file = openai.files.create(
+        file = client.files.create(
             file=file,
             purpose="assistants"
         )
-    except:
-        return {"id" : None}
+
+    except Exception as err:
+        print(err)
+        return {"para_A" : 'bad error handling i apologize. TODO <==='}
 
     # input_credentials = ("\n - ").join(requirements)
 
@@ -95,7 +97,7 @@ def generate_paragraphs(file: Annotated[bytes, File()], requirements: str, token
 
     print(prompt)
 
-    thread = openai.beta.threads.create(
+    thread = client.beta.threads.create(
         messages=[
             {
             "role": "user",
@@ -105,13 +107,13 @@ def generate_paragraphs(file: Annotated[bytes, File()], requirements: str, token
         ]
     )
 
-    run = openai.beta.threads.runs.create(
+    run = client.beta.threads.runs.create(
         thread_id=thread.id,
         assistant_id="asst_C0GRyfBLNOXtrxlOPpA4ouvr",
     )
 
     while True:
-        run = openai.beta.threads.runs.retrieve(
+        run = client.beta.threads.runs.retrieve(
             thread_id=thread.id,
             run_id=run.id
         )
@@ -120,12 +122,12 @@ def generate_paragraphs(file: Annotated[bytes, File()], requirements: str, token
 
         time.sleep(3)
 
-    messages = openai.beta.threads.messages.list(
+    messages = client.beta.threads.messages.list(
         thread_id=thread.id
     )
 
-    delete_file = openai.files.delete(file.id)
-    delete_thread = openai.beta.threads.delete(thread.id)
+    delete_file = client.files.delete(file.id)
+    delete_thread = client.beta.threads.delete(thread.id)
 
     # print(messages.data[0].content[0].text.value)
     # print(delete_thread)
