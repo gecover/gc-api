@@ -110,7 +110,7 @@ class ScrapingClient:
                 soup = bs.BeautifulSoup(source,'lxml')
                 div = soup.find("div", class_ = "show-more-less-html__markup show-more-less-html__markup--clamp-after-5 relative overflow-hidden" )
                 if div:
-                     prompt = f"Please extract the most important job requirements from the following job posting and list them in point form: {div.get_text()}."
+                    prompt = f"Please extract the most important job requirements from the following job posting and list them in point form: {div.get_text()}."
                     completion = client.chat.completions.create(model="gpt-3.5-turbo", messages=[{"role": "user", "content": prompt}])
                     response = completion.choices[0].message.content
                     
