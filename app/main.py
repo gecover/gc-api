@@ -72,9 +72,9 @@ async def extract_url(payload: URLPayload, token: Annotated[str, Depends(oauth2_
 @app.post("/generate_paragraphs/")
 def generate_paragraphs(file: Annotated[bytes, File()], requirements: str, token: Annotated[str, Depends(oauth2_scheme)]):#, token: Annotated[str, Depends(oauth2_scheme)]
     # get user data from JWT
-    data = supabase.auth.get_user(token)
-    # assert that the user is authenticated.
-    assert data.user.aud == 'authenticated', "402: not authenticated."
+    # data = supabase.auth.get_user(token)
+    # # assert that the user is authenticated.
+    # assert data.user.aud == 'authenticated', "402: not authenticated."
 
     try:
         # content = client.detect_document_text(Document={'Bytes': file})
@@ -87,13 +87,17 @@ def generate_paragraphs(file: Annotated[bytes, File()], requirements: str, token
         print(err)
         return {"para_A" : 'bad error handling i apologize. TODO <==='}
 
-    # input_credentials = ("\n - ").join(requirements)
-
-
     prompt = f"""
-    - {requirements}
+    The following are job requirements for a job I want to apply to:
 
-    Could you write me a couple paragraphs without an introduction/outro about why I am the right candidate for the job? The document you have access to is my CV.
+    <requirements>
+    - {requirements}
+    </requirements>
+    
+    Write me a couple paragraphs without an introduction/outro about why I am the right candidate for the job.
+    The document you have access to is my CV.
+
+    Please write in first person. Keep it simple and to the point. Do not cite anything.
     """
 
     print(prompt)
@@ -105,7 +109,7 @@ def generate_paragraphs(file: Annotated[bytes, File()], requirements: str, token
             "content": prompt,
             "file_ids": [file.id]
             }
-        ]
+        ],
     )
 
     run = client.beta.threads.runs.create(
