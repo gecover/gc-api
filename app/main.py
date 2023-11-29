@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 from pydantic import BaseModel
 from app.scrape.ScrapeClient import ScrapingClient
 from openai import OpenAI
+import time
 
 
 class URLPayload(BaseModel):
