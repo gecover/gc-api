@@ -71,7 +71,7 @@ async def extract_url(payload: URLPayload, token: Annotated[str, Depends(oauth2_
 
 @app.post("/generate_paragraphs/")
 def generate_paragraphs(file: Annotated[bytes, File()], requirements: str, token: Annotated[str, Depends(oauth2_scheme)]):#, token: Annotated[str, Depends(oauth2_scheme)]
-    get user data from JWT
+    # get user data from JWT
     data = supabase.auth.get_user(token)
     # assert that the user is authenticated.
     assert data.user.aud == 'authenticated', "402: not authenticated."
