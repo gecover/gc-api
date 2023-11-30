@@ -3,11 +3,11 @@ import logging
 import os
 from typing import List
 
-logging.basicConfig()
-logging.getLogger().setLevel(logging.DEBUG)
-requests_log = logging.getLogger("requests")
-requests_log.setLevel(logging.DEBUG)
-requests_log.propagate = True
+# logging.basicConfig()
+# logging.getLogger().setLevel(logging.DEBUG)
+# requests_log = logging.getLogger("requests")
+# requests_log.setLevel(logging.DEBUG)
+# requests_log.propagate = True
 
 # Class to wrap cohere api functionality for better modularity and reusability
 class CohereClient:

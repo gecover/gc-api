@@ -9,7 +9,7 @@ import os
 import concurrent.futures
 from urllib.parse import urlencode
 #from scrapeops_python_requests.scrapeops_requests import ScrapeOpsRequests
-import logging
+# import logging
 from dotenv import load_dotenv, find_dotenv
 from app.cohere.CohereClient import CohereClient
 from openai import OpenAI

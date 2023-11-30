@@ -71,10 +71,10 @@ async def extract_url(payload: URLPayload, token: Annotated[str, Depends(oauth2_
 
 @app.post("/generate_paragraphs/")
 def generate_paragraphs(file: Annotated[bytes, File()], requirements: str, token: Annotated[str, Depends(oauth2_scheme)]):#, token: Annotated[str, Depends(oauth2_scheme)]
-    # get user data from JWT
-    # data = supabase.auth.get_user(token)
-    # # assert that the user is authenticated.
-    # assert data.user.aud == 'authenticated', "402: not authenticated."
+    get user data from JWT
+    data = supabase.auth.get_user(token)
+    # assert that the user is authenticated.
+    assert data.user.aud == 'authenticated', "402: not authenticated."
 
     try:
         # content = client.detect_document_text(Document={'Bytes': file})
@@ -87,11 +87,14 @@ def generate_paragraphs(file: Annotated[bytes, File()], requirements: str, token
         print(err)
         return {"para_A" : 'bad error handling i apologize. TODO <==='}
 
+    print(requirements)
+    job_req_list = "\n - ".join(requirements.split('\n,'))
+
     prompt = f"""
     The following are job requirements for a job I want to apply to:
 
     <requirements>
-    - {requirements}
+    - {job_req_list}
     </requirements>
     
     Write me a couple paragraphs without an introduction/outro about why I am the right candidate for the job.
@@ -131,9 +134,17 @@ def generate_paragraphs(file: Annotated[bytes, File()], requirements: str, token
         thread_id=thread.id
     )
 
+    # delete the file and the thread.
     delete_file = client.files.delete(file.id)
+
+    # potentially in the future, the user could generate a thread for the cover letter,
+    # and then chat with openai to iterate upon it.
     delete_thread = client.beta.threads.delete(thread.id)
 
-    # print(messages.data[0].content[0].text.value)
-    # print(delete_thread)
-    return {'para_A' : messages.data[0].content[0].text.value, 'para_B' : 'result.data[1]'}  
+    output = messages.data[0].content[0].text.value
+    
+    # regex out the openai citations
+    pattern = r"【[^【]*】"
+    replaced_text = re.sub(pattern, "", output)
+
+    return {'para_A' : replaced_text, 'para_B' : 'result.data[1]'}  
